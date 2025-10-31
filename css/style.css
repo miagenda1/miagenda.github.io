@@ -1,5 +1,4 @@
-﻿/* ---------- CSS ORIGINAL (sin cambios) ---------- */
-:root{
+﻿:root{
   --bg:#f4f7fa;
   --card:#ffffff;
   --text:#222;
@@ -29,7 +28,7 @@ body{
   color:var(--text);
   transition:var(--trans);
 }
-header{
+.top-bar{
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -173,27 +172,6 @@ textarea#notas{
   padding:.5rem;
   border-radius:var(--radius);
 }
-
-/* ---------- FIXS MÓVILES (nuevos) ---------- */
 @media(max-width:900px){
   .layout{grid-template-columns:1fr;}
-  /* inputs más grandes para dedos */
-  button,input,select,textarea{
-    min-height:44px;
-    font-size:1rem;
-  }
-  /* botones de acción más separados */
-  .tarea button{
-    min-width:36px;
-    margin-left:4px;
-  }
-  /* evita texto largo fuera de caja */
-  .tarea{
-    word-break:break-word;
-  }
-  /* cabecera se apila */
-  .top-bar{
-    flex-direction:column;
-    gap:.5rem;
-  }
 }
