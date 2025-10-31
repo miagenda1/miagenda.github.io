@@ -1,5 +1,4 @@
-﻿/* ========== UTILS & DOM ========== */
-const $ = q => document.querySelector(q);
+﻿const $ = q => document.querySelector(q);
 const $$ = q => document.querySelectorAll(q);
 const fechaSel = new Date();
 let tareas = JSON.parse(localStorage.getItem('tareas')) || [];
@@ -7,20 +6,20 @@ let notas = localStorage.getItem('notas') || '';
 let nombre = localStorage.getItem('nombre') || '';
 $('#notas').value = notas;
 $('#nombreUsuario').value = nombre;
+$('#saludo').textContent = '¡Hola, ' + (nombre || 'Estudiante') + '!';
 
-/* ========== MODO OSCURO ========== */
-const guardaModo = () => localStorage.setItem('dark', document.documentElement.getAttribute('data-theme'));
+// modo oscuro
 if (localStorage.getItem('dark') === 'dark') document.documentElement.setAttribute('data-theme','dark');
 $('#toggleModo').onclick = () => {
   const esDark = document.documentElement.getAttribute('data-theme') === 'dark';
   document.documentElement.setAttribute('data-theme', esDark ? 'light' : 'dark');
-  guardaModo();
+  localStorage.setItem('dark', esDark ? 'light' : 'dark');
 };
 
-/* ========== PERFIL ========== */
+// perfil
 $('#nombreUsuario').oninput = e => {
   localStorage.setItem('nombre', e.target.value);
-  $('#saludo').textContent = `¡Hola, ${e.target.value || 'Estudiante'}!`;
+  $('#saludo').textContent = ¡Hola, ${e.target.value || 'Estudiante'}!;
 };
 $('#avatar').onclick = () => {
   const url = prompt('URL de tu imagen:');
@@ -31,15 +30,15 @@ $('#avatar').onclick = () => {
 };
 if (localStorage.getItem('avatar')) $('#avatar').src = localStorage.getItem('avatar');
 
-/* ========== NOTAS RÁPIDAS ========== */
+// notas
 $('#notas').oninput = e => localStorage.setItem('notas', e.target.value);
 
-/* ========== CALENDARIO ========== */
+// calendario
 const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 function pintarCal() {
   const year = fechaSel.getFullYear();
   const mes = fechaSel.getMonth();
-  $('#mesTitulo').textContent = `${meses[mes]} ${year}`;
+  $('#mesTitulo').textContent = ${meses[mes]} ${year};
   const primerDia = new Date(year, mes, 1).getDay();
   const diasMes = new Date(year, mes + 1, 0).getDate();
   const hoy = new Date();
@@ -47,7 +46,7 @@ function pintarCal() {
   for (let i = 0; i < primerDia; i++) html += '<div></div>';
   for (let d = 1; d <= diasMes; d++) {
     const esHoy = hoy.getDate() === d && hoy.getMonth() === mes && hoy.getFullYear() === year;
-    html += `<div class="${esHoy ? 'hoy' : ''}" data-dia="${d}">${d}</div>`;
+    html += <div class="${esHoy ? 'hoy' : ''}" data-dia="${d}">${d}</div>;
   }
   $('#diasCal').innerHTML = html;
   $$('#diasCal div[data-dia]').forEach(el => el.onclick = () => {
@@ -59,7 +58,7 @@ $('#prevMes').onclick = () => { fechaSel.setMonth(fechaSel.getMonth() - 1); pint
 $('#nextMes').onclick = () => { fechaSel.setMonth(fechaSel.getMonth() + 1); pintarCal(); };
 pintarCal();
 
-/* ========== TAREAS ========== */
+// tareas
 $('#formTarea').onsubmit = e => {
   e.preventDefault();
   const t = {
@@ -77,9 +76,7 @@ $('#formTarea').onsubmit = e => {
   renderTareas();
   e.target.reset();
 };
-function guardarTareas() {
-  localStorage.setItem('tareas', JSON.stringify(tareas));
-}
+function guardarTareas() { localStorage.setItem('tareas', JSON.stringify(tareas)); }
 function renderTareas() {
   const fecha = fechaSel.toISOString().slice(0,10);
   let lista = tareas.filter(t => t.fecha === fecha);
@@ -132,18 +129,18 @@ function actualizarProgreso(lista) {
   const hechas = lista.filter(t => t.completada).length;
   const porc = total ? Math.round((hechas / total) * 100) : 0;
   $('#barraProgreso').style.width = porc + '%';
-  $('#textoProgreso').textContent = `Has completado ${hechas} de ${total} tareas`;
+  $('#textoProgreso').textContent = Has completado ${hechas} de ${total} tareas;
 }
 renderTareas();
 
-/* ========== POMODORO ========== */
+// Pomodoro
 let pomodoroInterval = null;
 let tiempoRestante = 25 * 60;
 let esEstudio = true;
 function fmtT(s) {
   const m = Math.floor(s / 60);
   const seg = s % 60;
-  return `${m.toString().padStart(2,'0')}:${seg.toString().padStart(2,'0')}`;
+  return ${m.toString().padStart(2,'0')}:${seg.toString().padStart(2,'0')};
 }
 function ticPomodoro() {
   if (tiempoRestante <= 0) {
@@ -152,7 +149,6 @@ function ticPomodoro() {
     esEstudio = !esEstudio;
     tiempoRestante = (esEstudio ? $('#minEstudio').value : $('#minDescanso').value) * 60;
     $('#reloj').textContent = fmtT(tiempoRestante);
-    notificar(`Fin de ${esEstudio ? 'descanso' : 'estudio'}`);
     return;
   }
   tiempoRestante--;
@@ -170,58 +166,3 @@ $('#btnReiniciar').onclick = () => {
   tiempoRestante = $('#minEstudio').value * 60;
   $('#reloj').textContent = fmtT(tiempoRestante);
 };
-
-/* ========== CRONÓMETRO ========== */
-let cronoInterval = null;
-let cronoSeg = 0;
-function ticCrono() {
-  cronoSeg++;
-  $('#cronometro').textContent = new Date(cronoSeg * 1000).toISOString().substr(11,8);
-}
-$('#btnCronoIniciar').onclick = () => {
-  if (cronoInterval) return;
-  cronoInterval = setInterval(ticCrono, 1000);
-};
-$('#btnCronoReiniciar').onclick = () => {
-  clearInterval(cronoInterval);
-  cronoInterval = null;
-  cronoSeg = 0;
-  $('#cronometro').textContent = '00:00:00';
-};
-
-/* ========== EXPORTAR ========== */
-$('#btnExportar').onclick = () => {
-  const fecha = fechaSel.toISOString().slice(0,10);
-  const lista = tareas.filter(t => t.fecha === fecha);
-  if (!lista.length) return alert('No hay tareas hoy');
-  let txt = `Tareas del ${fecha}\n\n`;
-  lista.sort((a,b) => a.inicio.localeCompare(b.inicio));
-  lista.forEach(t => txt += `• [${t.completada?'X':' '}] ${t.inicio}-${t.fin} ${t.titulo} (${t.categoria})\n`);
-  const blob = new Blob([txt], {type:'text/plain'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `tareas-${fecha}.txt`;
-  a.click();
-};
-
-/* ========== NOTIFICACIONES ========== */
-function notificar(msg) {
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification(msg);
-  } else {
-    alert(msg);
-  }
-}
-if ('Notification' in window && Notification.permission === 'default') {
-  Notification.requestPermission();
-}
-
-/* ========== ALARMA 10 MIN ========== */
-setInterval(() => {
-  const ahora = new Date();
-  const fecha = ahora.toISOString().slice(0,10);
-  const prox = new Date(ahora.getTime() + 10*60000);
-  const proxStr = prox.toTimeString().slice(0,5);
-  const lista = tareas.filter(t => t.fecha === fecha && !t.completada && t.inicio === proxStr);
-  if (lista.length) notificar(`Tienes "${lista[0].titulo}" en 10 minutos`);
-}, 60000);
